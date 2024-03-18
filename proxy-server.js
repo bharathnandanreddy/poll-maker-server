@@ -24,6 +24,20 @@ const targetURL = 'https://developer.worldcoin.org';
 
 
 app.use(express.json());
+
+//middleware to WorldID
+app.post(`${apiEndpoint}/*`, async (req, res) => {
+    try {
+        // Forward the request to the Worldcoin API using Axios
+        console.log(`${targetURL}${req.url}`)
+        const worldcoinResponse = await axios.post(`${targetURL}${req.url}`, req.body);
+        res.json(worldcoinResponse.data);
+    } catch (error) {
+        console.error('Error forwarding request to Worldcoin:', error);
+        res.status(500).json({ success: false, message: 'Error forwarding request to Worldcoin' });
+    }
+});
+
 app.post('/createContract', async (req, res) => {
     const { title, options, account } = req.body;
     console.log(title, options, account)
@@ -101,20 +115,6 @@ app.get('/getDetails/:contractAddress', async (req, res) => {
         res.json({ success: true, title: title, options: options, votes:votes });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-
-//middleware to WorldID
-app.post(`${apiEndpoint}/*`, async (req, res) => {
-    try {
-        // Forward the request to the Worldcoin API using Axios
-        console.log(`${targetURL}${req.url}`)
-        const worldcoinResponse = await axios.post(`${targetURL}${req.url}`, req.body);
-        res.json(worldcoinResponse.data);
-    } catch (error) {
-        console.error('Error forwarding request to Worldcoin:', error);
-        res.status(500).json({ success: false, message: 'Error forwarding request to Worldcoin' });
     }
 });
 
